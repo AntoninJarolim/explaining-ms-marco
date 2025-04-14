@@ -52,6 +52,7 @@ def annotate_data():
                 try:
                     selected_span = input("Enter selected span: ")
                     selected_spans.append(selected_span)
+                    outfile.write_all(out_data)
                 except EOFError:
                     print(" [EOF received, ending input]")
                     break
@@ -65,7 +66,6 @@ def annotate_data():
             out_data.append(d)
             print("\n---\n")
 
-            outfile.write_all(out_data)
 
 
 print("INSTRUCTIONS for LLM")
