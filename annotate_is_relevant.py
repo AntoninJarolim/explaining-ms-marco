@@ -3,7 +3,7 @@ import random
 import time
 from pathlib import Path
 
-def run_annotation_session(dataset_dir="data/accuracy_dataset/to_annotate"):
+def run_annotation_session(dataset_dir="to_annotate"):
     # Prompt for annotator ID
     while True:
         try:
