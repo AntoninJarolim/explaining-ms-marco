@@ -33,9 +33,10 @@ def run_annotation_session(dataset_dir="to_annotate"):
 
     print(
     """
-    You will read a query and a text.
-    Your task is to decide whether the text contains the information asked in the query.
+    Your task is to read a query and a text, 
+    and then decide whether the text convinces you that it is relevant to the query.
     Note, that 'empty text' is not relevant to the query.
+    
     """
     )
     print("READY?")
