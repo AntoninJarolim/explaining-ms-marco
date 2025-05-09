@@ -25,8 +25,8 @@ def run_annotation_session(dataset_dir="to_annotate"):
     training_example = {
         "q_id": "train_0",
         "psg_id": "train_0",
-        "q_text": "je venca gey",
-        "extraction": "venca je giga teplej",
+        "q_text": "moon phases reason",
+        "extraction": "The moon has different phases because of the way it orbits the Earth and the way sunlight",
         "source": "dummy"
     }
     data.insert(0, training_example)
