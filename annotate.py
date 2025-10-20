@@ -6,7 +6,7 @@ from jsonlines import jsonlines
 def annotate_data():
 
     # Get index from user
-    index = input("Enter the index of the dataset to annotate (0-2) (or 'second_round'): ")
+    index = input("Select the index of the dataset to annotate {1, 2 or 3}: ")
 
     input_file = f"annotate_data/out_{index}.jsonl"
     output_file = f"annotate_data_out/out_{index}_explained.jsonl"
