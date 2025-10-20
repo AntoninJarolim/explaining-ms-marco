@@ -6,7 +6,7 @@ from jsonlines import jsonlines
 def annotate_data():
 
     # Get index from user
-    index = input("Enter the index of the dataset to annotate (1-9) (or 'test' for testing data): ")
+    index = input("Enter the index of the dataset to annotate (0-2) (or 'second_round'): ")
 
     input_file = f"annotate_data/out_{index}.jsonl"
     output_file = f"annotate_data_out/out_{index}_explained.jsonl"
@@ -20,7 +20,6 @@ def annotate_data():
             for d in outfile:
                 out_data.append(d)
 
-    max_lines = 60
     current_line = len(out_data)
 
     in_data = []
@@ -28,84 +27,79 @@ def annotate_data():
         for d in infile:
             in_data.append(d)
 
-    # Open the output file for writing
-    with jsonlines.open(output_file, "w") as outfile:
-        # Write the existing data to the output file -- if user interrupted before first write
-        outfile.write_all(out_data)
-
-        for i, d in enumerate(in_data):
-
-            # Skip already annotated lines
-            if i < current_line:
-                continue
-            print()
-            print()
-            print(f"Progress: {i + 1} of {max_lines}")
-
-            # Print the query and positive fields
-            print(f"Query: {d['query']}")
-            print(f"Text : {d['passage']}")
-
-            # Wait for user input
-            selected_spans = []
-            while True:
-                try:
-                    selected_span = input("Enter selected span: ")
-                    selected_spans.append(selected_span)
-                    outfile.write_all(out_data)
-                except EOFError:
-                    print(" [EOF received, ending input]")
-                    break
-
-            # Print the selected spans
-            print('Selected spans:')
-            print("\n\t".join(selected_spans))
-            d["selected_spans"] = selected_spans
-
-            # Add the modified JSON object to the output list
-            out_data.append(d)
-            print("\n---\n")
+    max_lines = len(in_data)
 
 
 
-print("INSTRUCTIONS for LLM")
+    for i, d in enumerate(in_data):
+
+        # Skip already annotated lines
+        if i < current_line:
+            continue
+        print()
+        print()
+        print(f"Progress: {i + 1} of {max_lines}")
+
+        # Print the query and positive fields
+        print(f"Query: {d['query']}")
+        print(f"Text : {d['passage']}")
+
+        print()
+
+        # Wait for user input
+        selected_spans = []
+        while True:
+            try:
+                selected_span = input("Enter selected span: ")
+                selected_spans.append(selected_span)
+
+            except EOFError:
+                print("[EOF received, ending input]")
+                break
+
+        # Print the selected spans
+        print('Selected spans:')
+        print("\n\t".join(selected_spans))
+        d["selected_spans"] = selected_spans
+
+        # Add the modified JSON object to the output list
+        out_data.append(d)
+
+        # Open the output file for writing
+        with jsonlines.open(output_file, "w") as outfile:
+            outfile.write_all(out_data)
+        print("\n---\n")
+
+
+
 print(
     """
-    You will be presented with a query and passage, please 
-    extract passage spans which are most relevant to the query.
+    =========== START OF INSTRUCTIONS ===========
 
-    Span must be comprehensive: removing the span from the text should make it irrelevant 
-    to the query.
-    Span must be plausible: human reading only this span should be convinced that text is relevant.   
-    Let's read both passage and query, and then carefully consider
-    relevance of each passage part to the query. 
+    You will be presented with a query and a passage. 
+    Please extract the passage spans that are most relevant to the query.
 
-    You may select multiple spans if needed, but ensure that the selected sections do not overlap. 
-    Try not to select entire sentences, but only fine-grained spans.
-    Do not correct or modify the text!
-    Include all grammatical and syntactic errors from the original text, 
-    do not remove senseless spaces or punctuation.
-
-    Return only json_object with key 'spans' and list of selected spans 
-    (text, start, end) as value. 
-    \n
-    Query: {query}
-    Passage: {passage}
-    """
-)
-
-
-print("INSTRUCTIONS for person")
-print(
-    """
-    same as above, but:
+    For illustration, imagine that you search for the query on Google
+    and the passage is one of the results. 
+    Which parts of the passage would you like to see highlighted (to get response/most relevant part faster)?
     
-    imagine that you google for the query and get the passage as a result
+    A span must be comprehensive: removing the span from the text should make the text irrelevant to the query.
+    A span must be plausible: a human reading only selected span should be convinced that the text is relevant.
     
-    What parts of the passage would you love to be highlighted (to get response/most relevant part faster)?
+    Let’s read both the passage and the query, and then carefully consider 
+    the relevance of each part of the passage to the query.
     
+    You may select multiple spans if needed, but ensure that the selected sections do not overlap. Try not to select entire sentences; prefer fine-grained spans.
     
-    =========== END OF INSTRUCTIONS ===========\n\n\n
+    Usage:
+    Select span using cursor, 
+    [Ctrl + C] to copy selected span
+    [Ctrl + V] to paste selected span
+    [Enter] to submit pasted span and proceed to selection of another
+    [Ctrl + D] to submit example and proceed to another example
+    [Ctrl + C] to abort the program (restart app to discard progress on current example)
+    
+    =========== END OF INSTRUCTIONS ===========
     """
 )
 
